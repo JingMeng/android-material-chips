@@ -373,11 +373,13 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     /**
      * rebuild all chips and place them right
+     * <p>
+     * onChipAdded 被调用了就会执行这个方法，执行摆放，位置处理
      */
     private void onChipsChanged(final boolean moveCursor) {
         ChipsVerticalLinearLayout.TextLineParams textLineParams = mRootChipsLayout.onChipsChanged(mChipList);
 
-        // if null then run another layout pass
+        // if null then run another layout pass    这一块不应该发生的，还是书写了一块兼容代码，这是好代码还是坏代码？？？
         if (textLineParams == null) {
             post(new Runnable() {
                 @Override
@@ -389,6 +391,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mEditText.getLayoutParams();
+        //仅仅处理了一个顶部的边距
         params.topMargin = (int) ((SPACING_TOP + textLineParams.row * CHIP_HEIGHT) * mDensity) + textLineParams.row * mVerticalSpacing;
         mEditText.setLayoutParams(params);
         addLeadingMarginSpan(textLineParams.lineMargin + mChipsMargin * textLineParams.chipsCount);
@@ -397,6 +400,13 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
     }
 
+    /**
+     * 解析一下这个的作用：应该是很有用，但是你没有想到的方法
+     * ------
+     * todo 2022年6月15日11:13:13
+     * 就是这个效果，前面通过spannable 占用了一部分  ，那删除的时候没有影响吗？？？？
+     * 添加或者删除某一个chiips的时候是没有影响的，因为都会调用到这一部分来更新一次数据，进而能够完美的实现校验
+     */
     private void addLeadingMarginSpan(int margin) {
         Spannable spannable = mEditText.getText();
         if (mCurrentEditTextSpan != null) {
@@ -422,14 +432,18 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
      * 从这个方法反推，  因为这个就是验证，验证通过就可以输入到面盘了
      * 看了一下这个地方主要处理了 粘贴的情形
      * return true if the text should be deleted
+     * <p>
+     * fixme 这个返回值还是有点不确定正确的含义
      */
     private boolean onEnterPressed(String text) {
         boolean shouldDeleteText = true;
         if (text != null && text.length() > 0) {
-
+            //检查是否是邮箱
             if (Common.isValidEmail(text)) {
+                //是邮箱
                 onEmailRecognized(text);
             } else {
+                //不是邮箱
                 shouldDeleteText = onNonEmailRecognized(text);
             }
             if (shouldDeleteText) {
@@ -458,6 +472,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         });
     }
 
+    /**
+     * 这个地方是邮箱确认
+     */
     private boolean onNonEmailRecognized(String text) {
         if (mChipsListener != null) {
             return mChipsListener.onInputNotRecognized(text);
@@ -490,8 +507,15 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                 mChipsListener.onChipDeleted(chip);
             }
             onChipsChanged(true);
-            if (nameClicked) {
+            // todo 2022年6月15日10:19:24  这个地方啊就可以设置是否一下子全部删除
+            if (false) {
+                //这个地方做一个测试
+                mEditText.setText("");
+            } else if (nameClicked) {
                 mEditText.setText(chip.getContact().getEmailAddress());
+            }
+
+            if (nameClicked) {
                 addLeadingMarginSpan();
                 mEditText.requestFocus();
                 mEditText.setSelection(mEditText.length());
@@ -633,6 +657,13 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         private String mLabel;
         private final Uri mPhotoUri;
         private final Contact mContact;
+        /**
+         * 这边还有一个参数可以设置是否可以编辑
+         * <p>
+         * Indelible 不可磨灭，默认应该是false
+         * <p>
+         * 这个换一个此就是 isDeleteAble
+         */
         private final boolean mIsIndelible;
 
         private RelativeLayout mView;
@@ -874,6 +905,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
     }
 
+    /**
+     * 这个暂时不知道怎么作用的
+     * <p>
+     * 数据回调 ，这边添加了什么曹锁，fragment或者Activity能够针对数据做一定的响应
+     */
     public interface ChipsListener {
         void onChipAdded(Chip chip);
 

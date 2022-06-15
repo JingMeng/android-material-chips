@@ -93,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onInputNotRecognized(String text) {
 
+                /**
+                 * 数据检查提示 ，目前项目就是如果你输入的不是一个email，给你一个dialog提示
+                 *
+                 */
                 try {
                     FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
 
@@ -136,6 +140,16 @@ public class MainActivity extends AppCompatActivity {
 
         private List<String> filteredList = new ArrayList<>();
 
+        /**
+         * * String[] arr = {"河南", "郑州", "开封", "周口", "商丘"};
+         * *         ArrayList<String> list = new ArrayList<>();
+         * *         list.addAll(Arrays.asList(arr));
+         * *
+         * * // 或者
+         * *  String[] arr = {"河南", "郑州", "开封", "周口", "商丘"};
+         * *         ArrayList<String> list = new ArrayList<>(Arrays.asList(arr));
+         * *
+         */
         public ContactsAdapter() {
             Collections.addAll(filteredList, data);
         }
@@ -170,6 +184,9 @@ public class MainActivity extends AppCompatActivity {
             notifyDataSetChanged();
         }
 
+        /**
+         * todo ： 这个有啥用？？？？ 应该这么写吗？？？
+         */
         @Override
         public int getItemViewType(int position) {
             return Math.abs(filteredList.get(position).hashCode());
@@ -185,10 +202,12 @@ public class MainActivity extends AppCompatActivity {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.tv_contact_name);
             selection = (CheckBox) itemView.findViewById(R.id.cb_contact_selection);
+            //为什么会再次托管
             selection.setOnClickListener(this);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //连这个方法都会被调用了
                     selection.performClick();
                 }
             });
@@ -202,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
 
             if (selection.isChecked()) {
                 boolean indelibe = Math.random() > 0.8f;
+                // FIXME: 2022/6/15  问题就在这里，这个就是不可以删除的操作
+                indelibe = false;
                 mChipsView.addChip(email, imgUrl, contact, indelibe);
             } else {
                 mChipsView.removeChipBy(contact);

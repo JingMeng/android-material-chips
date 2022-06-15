@@ -104,6 +104,9 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
         removeAllViews();
     }
 
+    /**
+     * 这个创建的并不是一个LayoutParam对象，而是一个类似于我们自定义View的时候的一个记忆对象
+     */
     public static class TextLineParams {
         public int row;
         public int lineMargin;
