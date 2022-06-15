@@ -151,7 +151,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if(mMaxHeight != DEFAULT_MAX_HEIGHT) {
+        if (mMaxHeight != DEFAULT_MAX_HEIGHT) {
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.AT_MOST);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -164,10 +164,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
     //<editor-fold desc="Initialization">
     private void initAttr(Context context, AttributeSet attrs) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.ChipsView,
-                0, 0);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ChipsView, 0, 0);
         try {
             mMaxHeight = a.getDimensionPixelSize(R.styleable.ChipsView_cv_max_height, DEFAULT_MAX_HEIGHT);
             mVerticalSpacing = a.getDimensionPixelSize(R.styleable.ChipsView_cv_vertical_spacing, (int) (DEFAULT_VERTICAL_SPACING * mDensity));
@@ -220,8 +217,10 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         mEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         mEditText.setHint(mChipsHintText);
 
+        //直接添加了到RelativeLayout
         mChipsContainer.addView(mEditText);
 
+        //这个是那个标签流(TAG)的布局，感觉好简单
         mRootChipsLayout = new ChipsVerticalLinearLayout(getContext(), mVerticalSpacing);
         mRootChipsLayout.setOrientation(LinearLayout.VERTICAL);
         mRootChipsLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -230,6 +229,12 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
 
         initListener();
 
+        Log.i(TAG, "==========" + isInEditMode());
+        /**
+         * 默认这个地方是 false 这样在编译器中就能看到默认添加的这两个了
+         * Indicates whether this View is currently in edit mode. A View is usually
+         *in edit mode when displayed within a developer tool.
+         */
         if (isInEditMode()) {
             // preview chips
             LinearLayout editModeLinLayout = new LinearLayout(getContext());
@@ -331,7 +336,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         for (int i = 0; i < mChipList.size(); i++) {
             if (mChipList.get(i).mContact != null && mChipList.get(i).mContact.equals(contact)) {
                 mChipList.remove(i);
-                if(mChipList.isEmpty()) {
+                if (mChipList.isEmpty()) {
                     mEditText.setHint(mChipsHintText);
                 }
                 onChipsChanged(true);
@@ -365,6 +370,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     //</editor-fold>
 
     //<editor-fold desc="Private Methods">
+
     /**
      * rebuild all chips and place them right
      */
@@ -413,6 +419,8 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
 
     /**
+     * 从这个方法反推，  因为这个就是验证，验证通过就可以输入到面盘了
+     * 看了一下这个地方主要处理了 粘贴的情形
      * return true if the text should be deleted
      */
     private boolean onEnterPressed(String text) {
@@ -436,6 +444,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
     }
 
     private void onEmailRecognized(Contact contact) {
+        //这个控件是view和数据额结合体，类似于ViewHolder
         Chip chip = new Chip(contact.getDisplayName(), null, contact);
         mChipList.add(chip);
         if (mChipsListener != null) {
@@ -567,22 +576,31 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             super(target, true);
         }
 
+        /**
+         * 输入字符
+         */
         @Override
         public boolean commitText(CharSequence text, int newCursorPosition) {
             return super.commitText(text, newCursorPosition);
         }
 
+        /**
+         * 注入按键
+         */
         @Override
         public boolean sendKeyEvent(KeyEvent event) {
             if (mEditText.length() == 0) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    //删除事件处理
                     if (event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
                         selectOrDeleteLastChip();
                         return true;
                     }
                 }
             }
+            //输入事件处理
             if (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                //就是拼接了一个换行，为什么要这么作
                 mEditText.append("\n");
                 return true;
             }
@@ -590,6 +608,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             return super.sendKeyEvent(event);
         }
 
+        /**
+         * 删除输入的字符
+         * <p>
+         * 这个稍微有一点问题，需要自己删除，
+         */
         @Override
         public boolean deleteSurroundingText(int beforeLength, int afterLength) {
             // magic: in latest Android, deleteSurroundingText(1, 0) will be called for backspace
@@ -707,6 +730,8 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
                 mView.setOnClickListener(this);
                 mIconWrapper.setOnClickListener(this);
             }
+
+            //设置基本的数据
             updateViews();
             return mView;
         }
@@ -796,9 +821,17 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
             }
         }
 
+        /**
+         * 因为实现了 OnClickListener ，所有才有这个方法
+         * todo
+         * 但是不知道这个方法有什么用处
+         *
+         * @param v
+         */
         @Override
         public void onClick(View v) {
             mEditText.clearFocus();
+            Log.i(TAG, v.getId() + "=====onClick=========onClick===========" + mView.getId());
             if (v.getId() == mView.getId()) {
                 onChipInteraction(this, true);
             } else {

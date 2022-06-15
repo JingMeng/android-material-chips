@@ -30,6 +30,13 @@ public class ChipsEditText extends AppCompatEditText {
         this.mInputConnectionWrapperInterface = inputConnectionWrapperInterface;
     }
 
+    /**
+     * 都是处理的这个事件
+     * 这个没有解释原理
+     * https://juejin.cn/post/6844903710242373646
+     * 这个说的也云里雾里的
+     * https://blog.csdn.net/z1074971432/article/details/50525093
+     */
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         if (mInputConnectionWrapperInterface != null) {
