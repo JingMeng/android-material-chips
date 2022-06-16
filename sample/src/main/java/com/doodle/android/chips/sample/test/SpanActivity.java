@@ -9,12 +9,14 @@ import com.doodle.android.chips.sample.MainActivity;
 import com.doodle.android.chips.sample.R;
 import com.doodle.android.chips.sample.test.demo.SpanDemoActivity;
 
+
 public class SpanActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_span);
+
 
         findViewById(R.id.demo).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -23,6 +25,10 @@ public class SpanActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        /**
+         * 分析了首行缩进
+         * 还有一个tag的布局没有分析
+         */
         findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
