@@ -406,6 +406,9 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
      * todo 2022年6月15日11:13:13
      * 就是这个效果，前面通过spannable 占用了一部分  ，那删除的时候没有影响吗？？？？
      * 添加或者删除某一个chiips的时候是没有影响的，因为都会调用到这一部分来更新一次数据，进而能够完美的实现校验
+     * <p>
+     * 这个好好看看实践一下
+     * https://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0120/2335.html
      */
     private void addLeadingMarginSpan(int margin) {
         Spannable spannable = mEditText.getText();
