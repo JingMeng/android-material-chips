@@ -32,6 +32,9 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
     private float mDensity;
     private int mRowSpacing;
 
+    /**
+     * 基本配置
+     */
     public ChipsVerticalLinearLayout(Context context, int rowSpacing) {
         super(context);
 
@@ -45,6 +48,9 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
+    /**
+     * 返回最后一行的参数设置， 这么做的目的主要是为了最后一行和EditText做交互使用的
+     */
     public TextLineParams onChipsChanged(List<ChipsView.Chip> chips) {
         clearChipsViews();
 
@@ -60,16 +66,28 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
 
         for (ChipsView.Chip chip : chips) {
             View view = chip.getView();
+            /**
+             *   测量view
+             *   我们之前是按照这个来测量的
+             *   measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, heightUsed);
+             *
+             *   heightUsed 这个 heightUsed 是我们的这个控件的父布局可能不是滑动的(高度固定的)  这个更多的是为了适配warp的情形吧
+             *   widthUsed 我们没有使用，是我们自己手偶东借宿那折行的
+             *
+             */
             view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
             // if width exceed current width. create a new LinearLayout
             if (widthSum + view.getMeasuredWidth() > width) {
+                //达到换行的条件，行数要+1了
                 rowCounter++;
+                //每一行的数据重新设置，上一次的计算量就是这一行的最大了
                 widthSum = 0;
                 chipsCount = 0;
                 ll = createHorizontalView();
             }
 
+            //每一行的开始或者继续操作
             widthSum += view.getMeasuredWidth();
             chipsCount++;
             ll.addView(view);
@@ -87,6 +105,14 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
         return new TextLineParams(rowCounter, widthSum, chipsCount);
     }
 
+    /**
+     * 水平方向添加
+     * 我们是自己定义的onMeasure和onLayout
+     * 这样就会导致 整个计算相对复杂一点
+     * <p>
+     * 这个地方的自定义是通过，一个垂直的LinearLayout
+     * 加上N个水平的LinearLayout 来实现标签的动态处理
+     */
     private LinearLayout createHorizontalView() {
         LinearLayout ll = new LinearLayout(getContext());
         ll.setPadding(0, 0, 0, mRowSpacing);
@@ -96,6 +122,10 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
         return ll;
     }
 
+
+    /**
+     * 清除视图
+     */
     private void clearChipsViews() {
         for (LinearLayout linearLayout : mLineLayouts) {
             linearLayout.removeAllViews();
@@ -112,6 +142,14 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
         public int lineMargin;
         public int chipsCount = 0;
 
+        /**
+         * new TextLineParams(rowCounter, widthSum, chipsCount)
+         *
+         * @param row        有多少行数据  -----------  因为在这个项目中最多占用了一行，所以我们记录一下这个行数就能知道上面有多少高度 也劲儿确定了顶部的margin使用
+         *                   如果是能折行的话，需要我们手机计算出上面的正确高度，也就是会出现上面的那个我们自己写的那个TagLayout的的高度计算问题
+         * @param lineMargin 这一行占用的宽度--------也就是需要针对EditText要加一下leftMargin这个操作
+         * @param chipsCount 最后一行有多少个 view
+         */
         public TextLineParams(int row, int lineMargin, int chipsCount) {
             this.row = row;
             this.lineMargin = lineMargin;

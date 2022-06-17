@@ -391,7 +391,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mEditText.getLayoutParams();
-        //仅仅处理了一个顶部的边距
+        //仅仅处理了一个顶部的边距======== 顶部边距+ 每一行的行高+ 这几行的间距
         params.topMargin = (int) ((SPACING_TOP + textLineParams.row * CHIP_HEIGHT) * mDensity) + textLineParams.row * mVerticalSpacing;
         mEditText.setLayoutParams(params);
         addLeadingMarginSpan(textLineParams.lineMargin + mChipsMargin * textLineParams.chipsCount);
@@ -653,6 +653,11 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
     }
 
+    /**
+     * todo： 备注，思考
+     * 这一部分使用adapter模式 向外开放，能够展现出不同的view实现
+     * 至于 是否使用了对象池复用技术就不需要再去计算了
+     */
     public class Chip implements OnClickListener {
 
         private static final int MAX_LABEL_LENGTH = 30;
