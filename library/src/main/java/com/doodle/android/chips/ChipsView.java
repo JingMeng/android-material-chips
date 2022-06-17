@@ -502,6 +502,20 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
         }
     }
 
+    /**
+     * 这个就是那个删除的业务逻辑
+     * 先解释当前的业务：
+     * <p>
+     * 如果没有选择，执行删除按钮的话，我们的操作是什么都不做，但是把当前的最后一个tag设置为选中
+     * 再次执行删除的时候执行删除操作
+     * <p>
+     * 这个有一个前提操作就是，你删除不动，如果都在内容栏目里面这种操作你是无法实现的 ------------- 这句话，存在问题
+     * 因为删除是执行的默认操作，我们拦截了默认操作 所以就是输入在输入框内也是没有问题的
+     * <p>
+     * -------------
+     * <p>
+     * 在我们的@案例中，删除的操作是判断节点类型，如果节点类型是@ 的就整体删除，否则按照EditText的默认操作来执行
+     */
     private void onChipInteraction(Chip chip, boolean nameClicked) {
         unselectChipsExcept(chip);
         if (chip.isSelected()) {
