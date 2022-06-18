@@ -65,6 +65,8 @@ public class EditInputManagerActivity extends AppCompatActivity {
      * https://blog.csdn.net/MoLiao2046/article/details/103352149
      * <p>
      * 典型的违禁词过滤和 @ 功能处理
+     * fixme
+     * 这个不适合做违禁词过滤，违禁词的那个在发送的时候直接过正则一下就好了
      */
     private void test3() {
         mCusEditText.setInputConnectionWrapperInterface(new CusEditText.InputConnectionWrapperInterface() {
