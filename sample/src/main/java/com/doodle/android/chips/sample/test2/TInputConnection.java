@@ -1,5 +1,6 @@
 package com.doodle.android.chips.sample.test2;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
@@ -15,6 +16,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 
 public class TInputConnection extends InputConnectionWrapper {
 
+    private static final String TAG = "TInputConnection";
     private BackspaceListener mBackspaceListener;
 
     /**
@@ -46,6 +48,7 @@ public class TInputConnection extends InputConnectionWrapper {
      */
     @Override
     public boolean deleteSurroundingText(int beforeLength, int afterLength) {
+        Log.i(TAG, "======deleteSurroundingText==========" + System.currentTimeMillis());
         if (mBackspaceListener != null) {
             if (mBackspaceListener.onBackspace()) {
                 return true;
@@ -65,6 +68,7 @@ public class TInputConnection extends InputConnectionWrapper {
      */
     @Override
     public boolean sendKeyEvent(KeyEvent event) {
+        Log.i(TAG, "======sendKeyEvent==========" + System.currentTimeMillis());
         if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (mBackspaceListener != null && mBackspaceListener.onBackspace()) {
                 return true;

@@ -656,6 +656,7 @@ public class ChipsView extends ScrollView implements ChipsEditText.InputConnecti
          */
         @Override
         public boolean deleteSurroundingText(int beforeLength, int afterLength) {
+            Log.i(TAG, "====deleteSurroundingText=======" + System.currentTimeMillis());
             // magic: in latest Android, deleteSurroundingText(1, 0) will be called for backspace
             if (mEditText.length() == 0 && beforeLength == 1 && afterLength == 0) {
                 // backspace

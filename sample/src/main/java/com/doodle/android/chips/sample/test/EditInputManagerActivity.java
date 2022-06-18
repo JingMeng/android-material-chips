@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -53,16 +54,84 @@ public class EditInputManagerActivity extends AppCompatActivity {
 
 
         //test1();
-        test2();
+//        test2();
+        test3();
 
 
+    }
+
+    /**
+     * 这个能判断现在添加的文本
+     * https://blog.csdn.net/MoLiao2046/article/details/103352149
+     * <p>
+     * 典型的违禁词过滤和 @ 功能处理
+     */
+    private void test3() {
+        mCusEditText.setInputConnectionWrapperInterface(new CusEditText.InputConnectionWrapperInterface() {
+            @Override
+            public InputConnection getInputConnection(InputConnection target) {
+                // 第二个参数不传递，会导致  CusEditText 里面的按个if出现一定的问题(崩溃)
+                return new InputConnectionWrapper(target, true) {
+
+                    @Override
+                    public boolean commitText(CharSequence text, int newCursorPosition) {
+                        Log.i(TAG, text + "=======输入内容=========commitText=============" + System.currentTimeMillis());
+                        if (TextUtils.equals(text, "@")) {
+                            Toast toast = Toast.makeText(EditInputManagerActivity.this, "输入了@字符~", Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            Log.i(TAG, "=====commitText=============" + System.currentTimeMillis());
+                            return true;
+                        }
+                        return super.commitText(text, newCursorPosition);
+                    }
+
+                    @Override
+                    public boolean sendKeyEvent(KeyEvent event) {
+
+                        /**
+                         * 这个删除判断，入股是@ 的话，前提是@前年的那个字符被删除完了
+                         *
+                         * 也就是在删除的时候出去最后一个内容
+                         * 1. 如果是@的部分，那我们直接删除这一个整体
+                         * 2. 如果是文本，则取出此文本，修改此文本的内容(我们使用的是对象引用，就去取出来对象，重新赋值)
+                         * 当删除到这个对象的最后一个只读的时候，从集合删除这个对象，对下一个对象进行相关的操作
+                         */
+                        if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
+
+                            //这个就是针对删除事件进行拦截
+                            Editable editable = mCusEditText.getText();
+                            if (editable.length() == 0) {
+                                return false;
+                            }
+
+                            int index = Math.max(0, mCusEditText.getSelectionStart() - 1);
+                            char charAt = editable.charAt(index);
+                            Log.i(TAG, "===========" + charAt);
+                            //删除@事件监听
+                            if (charAt == '@') {
+                                Toast toast = Toast.makeText(EditInputManagerActivity.this, "无法删除@字符~", Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                toast.show();
+                                return true;
+                            }
+                        }
+                        return super.sendKeyEvent(event);
+
+                    }
+                };
+                //
+
+
+            }
+        });
     }
 
     private void test2() {
         mCusEditText.setInputConnectionWrapperInterface(new CusEditText.InputConnectionWrapperInterface() {
             @Override
             public InputConnection getInputConnection(InputConnection target) {
-                //
+                // 第二个参数不传递，会导致  CusEditText 里面的按个if出现一定的问题(崩溃)
                 return new InputConnectionWrapper(target, true) {
 
                     @Override

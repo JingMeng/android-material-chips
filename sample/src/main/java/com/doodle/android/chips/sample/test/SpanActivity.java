@@ -11,6 +11,11 @@ import com.doodle.android.chips.sample.test.demo.SpanDemoActivity;
 import com.doodle.android.chips.sample.test2.Test2Activity;
 
 
+/**
+ * 网络上的另外的一种监听方案 但是最后还是使用了我们这种
+ * <p>
+ * https://www.jianshu.com/p/97a00548adab
+ */
 public class SpanActivity extends AppCompatActivity {
 
     @Override
@@ -19,6 +24,9 @@ public class SpanActivity extends AppCompatActivity {
         setContentView(R.layout.activity_span);
 
 
+        /**
+         * 在这个方法中 deleteSurroundingText 也是不会被调用到的
+         */
         findViewById(R.id.demo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,6 +55,19 @@ public class SpanActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        /**
+         * 在这个里面其实 也米有调用deleteSurroundingText 这个方法
+         *
+         * 但是调用了 sendKeyEvent
+         *
+         *     if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
+         *       if (mBackspaceListener != null && mBackspaceListener.onBackspace()) {
+         *           return true;
+         *       }
+         *     }
+         *
+         *     但是这个可以监听输入，监听你的回车，但是 sendKeyEvent 无法监听输入@或者某一个字符
+         */
         findViewById(R.id.demo1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -22,6 +22,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputConnectionWrapper;
 
 public class CusEditText extends AppCompatEditText {
 
@@ -49,9 +50,15 @@ public class CusEditText extends AppCompatEditText {
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         //这个地方被覆盖了
-        Log.i(TAG, "==========onCreateInputConnection=======这个被执行了吗？======");
+        Log.i(TAG, (mInputConnectionWrapperInterface != null) + "==========onCreateInputConnection=======这个被执行了吗？======");
         if (mInputConnectionWrapperInterface != null) {
-            return mInputConnectionWrapperInterface.getInputConnection(super.onCreateInputConnection(outAttrs));
+            InputConnectionWrapper connection = (InputConnectionWrapper) mInputConnectionWrapperInterface.getInputConnection(super.onCreateInputConnection(outAttrs));
+
+            if (false) {
+                //三方借鉴别人的多调用了这么一个方法  --因为我们已经在上面传递了 target ，就不需要在传递了，所以这个方法没有必要设置成为true
+                connection.setTarget(super.onCreateInputConnection(outAttrs));
+            }
+            return connection;
         }
 
         return super.onCreateInputConnection(outAttrs);
