@@ -1,12 +1,16 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdk 34
+    namespace 'com.doodle.android.chips'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdk 34
         versionCode 4
         versionName "1.2.0"
         setProperty("archivesBaseName", "android-material-chips-$versionName")
@@ -21,16 +25,16 @@ android {
 }
 
 dependencies {
-    compile 'com.makeramen:roundedimageview:2.0.1'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.rengwuxian.materialedittext:library:2.1.4'
-    testCompile 'junit:junit:4.12'
+    implementation 'com.makeramen:roundedimageview:2.0.1'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
+    testImplementation 'junit:junit:4.12'
 }
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
 
 task javadoc(type: Javadoc) {
@@ -39,7 +43,7 @@ task javadoc(type: Javadoc) {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from javadoc.destinationDir
 }
 
