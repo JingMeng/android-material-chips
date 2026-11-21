@@ -157,3 +157,4 @@ public class ChipsVerticalLinearLayout extends LinearLayout {
         }
     }
 }
+
