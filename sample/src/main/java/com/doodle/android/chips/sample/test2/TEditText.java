@@ -9,7 +9,7 @@ import android.view.inputmethod.InputConnection;
  * Created by tuzhenyu on 2017/12/21.
  */
 
-public class TEditText extends android.support.v7.widget.AppCompatEditText {
+public class TEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     private TInputConnection inputConnection;
 

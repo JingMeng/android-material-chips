@@ -17,7 +17,7 @@
 package com.doodle.android.chips.sample.test;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatEditText;
+import androidx.appcompat.widget.AppCompatEditText;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
